@@ -73,7 +73,7 @@ El flujo clasifica y enruta correctamente las tareas a las plataformas designada
 ![telegram](https://github.com/user-attachments/assets/7646c152-498a-47f9-8958-9cda3d0927c1)
 
 
-**Ejemplo 5: Ruta de "Errores" (Registro en Google Sheets)**
+**Ejemplo 5: Ruta de "Errores" (Evento en Google Calendar)**
 ![flujo_errores](https://github.com/user-attachments/assets/2ab0ab27-8c32-431e-825b-b56d7a5fbecf)
 ![modelo_response](https://github.com/user-attachments/assets/b6108eb8-5428-40e3-9385-92b4a4a0d63c)
 ![calendar](https://github.com/user-attachments/assets/ef1887d1-195c-43c4-9546-5910af04b65e)
