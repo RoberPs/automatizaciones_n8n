@@ -12,7 +12,7 @@ Este repositorio contiene los flujos de trabajo de n8n, la documentación técni
 Un flujo de trabajo que lee un buzón de soporte, usa OpenAI para clasificar la intención del correo (Ventas, Soporte, etc.) y enruta automáticamente la tarea a la herramienta correcta (Trello, Jira, Slack).
 
 * **Tecnologías:** n8n, Gmail API, OpenAI, Jira, Trello, Google Sheets, Telegram.
-* **[➡️ Ver el informe técnico y el código de este proyecto](./Clasificador_emails/README.md)**
+* **[➡️ Ver el informe técnico y el código de este proyecto](./clasificador_emails/README.md)**
 
 ---
 
