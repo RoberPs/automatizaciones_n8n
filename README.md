@@ -20,7 +20,7 @@ Un flujo de trabajo que lee un buzón de soporte, usa OpenAI para clasificar la 
 Un flujo avanzado que monitorea noticias de la industria, extrae el contenido, lo resume, y usa un LLM (con RAG y una guía de estilo propia) para redactar borradores de artículos de blog en Google Docs.
 
 * **Tecnologías:** n8n, RSS, HTTP Request, HTML Extract, OpenAI (RAG), Google Docs, Telegram.
-* **[➡️ Ver el informe técnico y el código de este proyecto](./Creacion_blogs_ia/README.md)**
+* **[➡️ Ver el informe técnico y el código de este proyecto](./Creación_blog/README.md)**
 
 ---
 
