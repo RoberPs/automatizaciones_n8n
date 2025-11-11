@@ -1,1 +1,501 @@
 
+{
+  "name": "Contenido_blog",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://feeds.feedburner.com/TechCrunch/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -1360,
+        -224
+      ],
+      "id": "b562797b-1935-451c-b6a5-7a56aaf87cc7",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "url": "https://www.wired.com/feed/rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -1360,
+        -64
+      ],
+      "id": "24121f80-6a9b-458d-a828-fc0cc9ae2295",
+      "name": "RSS Read2"
+    },
+    {
+      "parameters": {
+        "url": "https://www.theverge.com/rss/index.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -1360,
+        112
+      ],
+      "id": "31190032-f9c3-4286-9642-e2ee1e6b0ad2",
+      "name": "RSS Read3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "dateTime": [
+            {
+              "value1": "={{ $json.isoDate }}",
+              "value2": "={{ $now.minus({ 'hours': 24 }) }}"
+            }
+          ]
+        }
+      },
+      "name": "Filtrar < 24 horas1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        -80
+      ],
+      "id": "79d49e30-3615-4cc1-935a-c90bfba24a84"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        176
+      ],
+      "id": "d32bfde7-f3fd-499e-b241-7dd3291228de",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres el redactor jefe y experto en IA de \"RoAiAutomatizaciones\".\n\nTu tarea es escribir un borrador de artículo de blog para nuestra empresa, reaccionando a la noticia de actualidad que te proporcionaré.\n\nDebes seguir OBLIGATORIAMENTE nuestra guía interna de tono y estilo.\n\n---\n[GUÍA DE ESTILO INTERNA]\n{{ $('Limit').item.json.title }}\n---\n[NOTICIA DE ACTUALIDAD]\n{{ $json.message.content }}\n---\n[LINK TODO LA INFO]\n{{ $('Limit').item.json.link }}\nINSTRUCCIONES:\n1.  Escribe un borrador de aproximadamente 100 palabras.\n2.  El borrador debe reaccionar a la \"NOTICIA DE ACTUALIDAD\", pero escrito con la voz y el tono de nuestra \"GUÍA DE ESTILO INTERNA\".\n3.  Incluye un título atractivo y 3 secciones claras.\n4.  No copies el artículo de la noticia; úsalo como inspiración y añade nuestra perspectiva única.\n5.  Responde únicamente con el borrador del artículo. No añadas saludos ni comentarios."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -432,
+        -96
+      ],
+      "id": "9af23581-bb5b-4011-9e12-5edec941a179",
+      "name": "Redactar articulos blog",
+      "credentials": {
+        "openAiApi": {
+          "id": "QqEw1WzJqRgnJV2l",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1_Ew7Vsn_wQThO1wt0kRcSKMzWw9pg7rk",
+        "title": "={{ $('Limit').item.json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -96
+      ],
+      "id": "2e3ebbdf-cb43-4b58-9d0b-4b4b7414c070",
+      "name": "Crear document_id",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "lfDQXovUpD9zrWGy",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=\n\n{{ $('Redactar articulos blog').item.json.message.content }}\n\nLink articulo: {{ $('Limit').item.json.link }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -96
+      ],
+      "id": "4b541bb0-cba8-4d6d-89cc-8d6945ea0ff4",
+      "name": "Añadir contenido articulo",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "lfDQXovUpD9zrWGy",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Activación diaria del flujo y  obtención de los feeds de las webs",
+        "height": 544,
+        "width": 736
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1696,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "038681d0-0ef5-4714-aad1-4082eaf5a5d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1664,
+        -64
+      ],
+      "id": "3cc6a83a-9b26-431c-8837-6c195e1e8470",
+      "name": "Temporizador activador diario"
+    },
+    {
+      "parameters": {
+        "content": "Filtrado noticias diarias ",
+        "height": 528,
+        "width": 384,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "bb4a2e2d-8e64-49ca-b6c3-dda1431694d4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Creación y almacenamiento de artículos creados con LLM para su posterior revisión humana.",
+        "height": 576,
+        "width": 784,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "1267c89d-c47e-4f03-92df-93883747d191",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "chatId": "1910411609",
+        "text": "=✅ ¡Nuevo Borrador de Blog Creado!\n\nEl artículo \"{{ $('Filtrar < 24 horas1').item.json.title }}\" ha sido redactado por la IA.\n\nEstá listo para tu revisión en Google Docs.\n\nEnlace: https://docs.google.com/document/d/{{ $json.documentId }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        208
+      ],
+      "id": "04181c25-5e21-4a15-8c8b-ca2d855dcc87",
+      "name": "Informar de nuevos artículos",
+      "webhookId": "ccf0ae00-4952-4f7b-9e83-91a4ed6a88a7",
+      "credentials": {
+        "telegramApi": {
+          "id": "0m0cQlZUxv9R4yCN",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -416,
+        -464
+      ],
+      "id": "aaf0075d-8afd-4960-b910-1f9955dccfd0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -112
+      ],
+      "id": "6cd6799f-a7d5-44ad-aec8-559bb7acf63b",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {
+          "ignore": "header"
+        }
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -464
+      ],
+      "id": "af17bfc8-8b3c-4d0f-a9cc-7aa23f865895",
+      "name": "Transformar a markdown"
+    },
+    {
+      "parameters": {
+        "content": "Scraping de datos de los articulos de las webs resumiendo el contenido.",
+        "height": 256,
+        "width": 1024,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -528,
+        -512
+      ],
+      "typeVersion": 1,
+      "id": "ddf0a400-6d99-44c3-9371-84ad6bd7dd42",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=#Información\nEres un asistente experto en analizar y resumir contenido web. Se te dara la información en formato Markdown y necesito que la retornes en el formato deseado.\n\nQuiero que hagas un resumen en formato JSON de las noticias que encuentres en las webs facilitadas.{{ $json.data }}\n\nExtrae el TITULO , FECHA, CONTENIDO DE LA NOTICIA.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        160,
+        -464
+      ],
+      "id": "2800a8ab-f1a0-4eaa-83b4-618319a3cf44",
+      "name": "Resumir noticias con LLM",
+      "credentials": {
+        "openAiApi": {
+          "id": "QqEw1WzJqRgnJV2l",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Read3": {
+      "main": [
+        [
+          {
+            "node": "Filtrar < 24 horas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read2": {
+      "main": [
+        [
+          {
+            "node": "Filtrar < 24 horas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Filtrar < 24 horas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar < 24 horas1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redactar articulos blog": {
+      "main": [
+        [
+          {
+            "node": "Crear document_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear document_id": {
+      "main": [
+        [
+          {
+            "node": "Añadir contenido articulo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Temporizador activador diario": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Añadir contenido articulo": {
+      "main": [
+        [
+          {
+            "node": "Informar de nuevos artículos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Transformar a markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transformar a markdown": {
+      "main": [
+        [
+          {
+            "node": "Resumir noticias con LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumir noticias con LLM": {
+      "main": [
+        [
+          {
+            "node": "Redactar articulos blog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c2f4b51c-5b66-4e31-bb3a-b043aa665b35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4fa8d68f90c36ba661f4e0633d48090fe4f8753a911b0a36ff5659d288034836"
+  },
+  "id": "yP3TytHzk1IQY1qH",
+  "tags": []
+}
