@@ -1,0 +1,665 @@
+{
+  "name": "Clasificador_emails",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4-turbo",
+          "mode": "list",
+          "cachedResultName": "GPT-4-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un agente de soporte experto en triaje. Tu trabajo es leer un correo de soporte y clasificarlo en UNA de las siguientes categorías:\n- Ventas\n- Soporte\n- Facturación\n- Markenting\n\nResponde SOLAMENTE en español y SIEMPRE  con la palabra categoría (ej. 'Ventas' o 'Soporte Técnico' o'Facturación')\n\nEn caso de no reconocer o no poder clasificar el email devuelve ademas de la categoria el mensaje:\n\"No ha sido posible categorizar el email\"\n\nEl correo es:\nmensaje:{{$json.body }}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1472,
+        0
+      ],
+      "id": "bab5efbb-642b-4aea-be8c-68d5c235d959",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "QqEw1WzJqRgnJV2l",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "Label_2901688452692169393"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1968,
+        0
+      ],
+      "id": "58451f66-f816-43d7-bc66-0a307bab3194",
+      "name": "Obtener Emails",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "oxfABJQiqJ3P3Ohl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.content[\"categoría\"] }}",
+                    "rightValue": "Facturación",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4f96153c-f23f-4582-a457-c4c792166d0e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c2c540f4-3827-4dc7-9b27-4435781cb42f",
+                    "leftValue": "={{ $json.message.content[\"categoría\"] }}",
+                    "rightValue": "Marketing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "900db4ea-d686-4a7b-b929-f717a46527ac",
+                    "leftValue": "={{ $json.message.content[\"categoría\"] }}",
+                    "rightValue": "Ventas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "286ff70e-fe02-4167-8aec-1ebb59ef853a",
+                    "leftValue": "={{ $json.message.content[\"categoría\"] }}",
+                    "rightValue": "Soporte",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1072,
+        -48
+      ],
+      "id": "8f55f765-21ac-4e4f-837b-3e81a0ab349d",
+      "name": "Filtrar departamento"
+    },
+    {
+      "parameters": {
+        "chatId": "1910411609",
+        "text": "=¡Email de cliente! 🏃\n\n- De: {{ $('Obtener información esencial').item.json.From }}\n- Asunto: {{ $('Obtener información esencial').item.json.Subject }}\n\nContenido del Correo:\n{{ $('Obtener información esencial').item.json.body }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        -288
+      ],
+      "id": "17ab75f1-543d-49c4-a95b-2e0e84007487",
+      "name": "Conectar con equipo de facturación",
+      "webhookId": "c38d2923-d3d8-4914-837f-9feed5a0c890",
+      "credentials": {
+        "telegramApi": {
+          "id": "0m0cQlZUxv9R4yCN",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "10000",
+          "mode": "list",
+          "cachedResultName": "n8n_incidencias"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "10003",
+          "mode": "list",
+          "cachedResultName": "Tarea"
+        },
+        "summary": "={{ $('Obtener Emails').item.json.Subject }}",
+        "additionalFields": {
+          "description": "=Correo recibido de: {{ $('Obtener Emails').item.json.From }}\n--- CONTENIDO: {{ $('Obtener Emails').item.json.snippet }}"
+        }
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        368
+      ],
+      "id": "89222768-3126-41cb-ad30-177d1afb7d39",
+      "name": "Crear incidencia para soporte",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "YOZJhyoLfkzdHCVZ",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1a3mvt9fgUUWNpzYGLwd8h6rMPF2r176_YGvzVeHSOsg",
+          "mode": "list",
+          "cachedResultName": "Marketing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a3mvt9fgUUWNpzYGLwd8h6rMPF2r176_YGvzVeHSOsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "listado_marketing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a3mvt9fgUUWNpzYGLwd8h6rMPF2r176_YGvzVeHSOsg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Obtener Emails').item.json.From }}",
+            "Subject": "={{ $('Obtener Emails').item.json.Subject }}",
+            "Content": "={{ $('Obtener Emails').item.json.snippet }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -752,
+        -96
+      ],
+      "id": "272d2166-3365-4a5c-bde4-4177517842e1",
+      "name": "Registrar lead de marketing",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qMH1sFQpcnh8fAbT",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Obtener Emails').item.json.From }}",
+        "subject": "={{ $('Obtener Emails').item.json.Subject }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Confirmación de Consulta</title>\n</head>\n<body style=\"margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;\">\n\n  <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f4f4f4;\">\n    <tr>\n      <td align=\"center\">\n        \n        <table width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #ffffff; margin-top: 30px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);\">\n          \n          <tr>\n            <td style=\"padding: 40px 30px 40px 30px; color: #333333; font-size: 16px; line-height: 1.6;\">\n              \n              <h1 style=\"margin-top: 0; font-size: 24px; color: #2c3e50;\">¡Hemos recibido tu consulta!</h1>\n              \n              <p style=\"margin-bottom: 25px;\">\n                Hola,\n              </p>\n              \n              <p style=\"margin-bottom: 25px;\">\n                Este es un mensaje automático para confirmar que hemos recibido tu solicitud correctamente.\n              </p>\n              \n              <p style=\"margin-bottom: 25px;\">\n                Nuestro equipo la está revisando y se pondrá en contacto contigo a la mayor brevedad posible para darte una respuesta.\n              </p>\n              \n              <p style=\"margin-bottom: 30px; font-weight: bold;\">\n                Muchas gracias por tu paciencia.\n              </p>\n              \n              <p style=\"margin: 0; color: #555555;\">\n                Atentamente,<br>\n                El equipo de RoAiAutomatizaciones\n              </p>\n\n            </td>\n          </tr>\n        </table>\n\n      </td>\n    </tr>\n  </table>\n\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        64
+      ],
+      "id": "ecb7c82e-2e6a-4a70-844d-045258a8edbd",
+      "name": "Confirmar recepción de consultas",
+      "webhookId": "5833c6fc-b00e-4289-a024-65732054c094",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "oxfABJQiqJ3P3Ohl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        64
+      ],
+      "id": "a9b1f781-0bd7-4508-84e5-f0ee7512735a",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "content": "Obtener y filtrar datos de email\n",
+        "height": 368,
+        "width": 512,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2032,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "81edf623-44de-4bc0-8d1e-53ab81d35e6b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Clasificación y organización de información con LLM Y APPS",
+        "height": 864,
+        "width": 944
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1488,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "015cbbe3-6a54-4234-90be-6c8a56d9618e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Respuesta a las solicitudes con emails y fin de flujo",
+        "height": 368,
+        "width": 608,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "e839a7d7-6f10-4d5a-8726-721ad202471c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "993d0fde-8233-4313-9a0f-8699ac71073c",
+              "name": "body",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "9bd7624f-7fb4-4a58-809a-e614179b8c5a",
+              "name": "From",
+              "value": "={{ $json.From }}",
+              "type": "string"
+            },
+            {
+              "id": "b1ac7013-879c-4bfe-82d8-261525de988d",
+              "name": "Subject",
+              "value": "={{ $json.Subject }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1712,
+        0
+      ],
+      "id": "5bca1524-86c0-44a7-8b57-2715be8223af",
+      "name": "Obtener información esencial"
+    },
+    {
+      "parameters": {
+        "listId": "690c9b7005466c4fb83dbd53",
+        "name": "={{ $('Obtener información esencial').item.json.Subject }}",
+        "description": "={{ $('Obtener información esencial').item.json.From }}Nuevo lead desde el correo:\n\nDe: \n---\nContenido del Correo:\n{{ $('Obtener información esencial').item.json.body }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        144
+      ],
+      "id": "600b7fce-b479-4376-b605-24ccd0c765ca",
+      "name": "Obtener leads ventas",
+      "credentials": {
+        "trelloApi": {
+          "id": "hiHvyILDPipovAVg",
+          "name": "Trello account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "041d8defeacf76ea549984adeef1729a523f44344ea0cf70efdcd5ff7adb7029@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "end": "={{ $now.plus(1, 'day') }}",
+        "additionalFields": {
+          "description": "=Respuesta de la IA que causó el fallo:\n\"{{ $json.message.content['categoría'] }}\""
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        368
+      ],
+      "id": "2295a471-2d83-49fe-9235-fdfec6020180",
+      "name": "Registrar errores de solicitud y LLM",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Ab67vyubUjbjxFLl",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Filtrar departamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Emails": {
+      "main": [
+        [
+          {
+            "node": "Obtener información esencial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar departamento": {
+      "main": [
+        [
+          {
+            "node": "Conectar con equipo de facturación",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar lead de marketing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obtener leads ventas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear incidencia para soporte",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar errores de solicitud y LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conectar con equipo de facturación": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear incidencia para soporte": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar lead de marketing": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmar recepción de consultas": {
+      "main": [
+        []
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Confirmar recepción de consultas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener información esencial": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener leads ventas": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0bef21a6-520b-4bee-8b90-2c653f475141",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4fa8d68f90c36ba661f4e0633d48090fe4f8753a911b0a36ff5659d288034836"
+  },
+  "id": "lIlsfTCgtWjdOiwO",
+  "tags": [
+    {
+      "createdAt": "2025-10-22T09:36:30.369Z",
+      "updatedAt": "2025-10-22T09:36:30.369Z",
+      "id": "4vYUUZiP9j2nj3hG",
+      "name": "telegram"
+    },
+    {
+      "createdAt": "2025-11-07T10:09:56.988Z",
+      "updatedAt": "2025-11-07T10:09:56.988Z",
+      "id": "7P7OjPnMaXHmk20k",
+      "name": "jira"
+    },
+    {
+      "createdAt": "2025-11-07T10:10:07.885Z",
+      "updatedAt": "2025-11-07T10:10:07.885Z",
+      "id": "C5t35VLQmPZmZl5L",
+      "name": "trello"
+    },
+    {
+      "createdAt": "2025-11-07T10:09:33.829Z",
+      "updatedAt": "2025-11-07T10:09:33.829Z",
+      "id": "GADMQPY8d6msKvbe",
+      "name": "openai"
+    },
+    {
+      "createdAt": "2025-10-22T09:37:13.232Z",
+      "updatedAt": "2025-10-22T09:37:13.232Z",
+      "id": "VZHbzY1jNeygsQjc",
+      "name": "gmail"
+    },
+    {
+      "createdAt": "2025-10-22T09:36:09.892Z",
+      "updatedAt": "2025-10-22T09:36:09.892Z",
+      "id": "vIi5iTtgUlXRk8QF",
+      "name": "calendar"
+    }
+  ]
+}
