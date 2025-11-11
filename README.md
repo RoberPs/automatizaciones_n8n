@@ -56,12 +56,29 @@ El flujo clasifica y enruta correctamente las tareas a las plataformas designada
 
 
 **Ejemplo 2: Ruta de "Soporte" (Creación en Jira)**
-**(Aquí pegas la captura del ticket creado en Jira)**
-![Resultado en Jira](enlace_a_tu_captura_de_jira.png)
+![flujo_soporte](https://github.com/user-attachments/assets/91318875-3328-41db-97e2-2078ad2a525b)
+![model_soporte](https://github.com/user-attachments/assets/565885e6-f606-4e4e-b113-bca7e09450b2)
+![jira](https://github.com/user-attachments/assets/828251a8-0e4e-4d76-bd92-26b906a7f2dc)
+
 
 **Ejemplo 3: Ruta de "Marketing" (Registro en Google Sheets)**
-**(Aquí pegas la captura de la fila creada en Google Sheets)**
-![Resultado en Google Sheets](enlace_a_tu_captura_de_sheets.png)
+![Marketing](https://github.com/user-attachments/assets/4fcf8c7c-e5cb-44cd-b772-d9c04306f69d)
+![model-marketing](https://github.com/user-attachments/assets/8f11b642-4323-4d8f-908e-c74f7b8b0dab)
+![sheets-marketing](https://github.com/user-attachments/assets/31cb69c1-b57a-4a76-9635-ded15f9ad552)
+
+
+**Ejemplo 4: Ruta de "Facturación" (Notificación Telegram)**
+![flujo_facturación](https://github.com/user-attachments/assets/6b78076d-00ec-4080-a9a4-46c30a3975a9)
+![modelo_facturación](https://github.com/user-attachments/assets/1d9f4213-dc3d-4654-9ba8-fc2c2e7dd158)
+![telegram](https://github.com/user-attachments/assets/7646c152-498a-47f9-8958-9cda3d0927c1)
+
+
+**Ejemplo 5: Ruta de "Errores" (Registro en Google Sheets)**
+![flujo_errores](https://github.com/user-attachments/assets/2ab0ab27-8c32-431e-825b-b56d7a5fbecf)
+![modelo_response](https://github.com/user-attachments/assets/b6108eb8-5428-40e3-9385-92b4a4a0d63c)
+![calendar](https://github.com/user-attachments/assets/ef1887d1-195c-43c4-9546-5910af04b65e)
+
+
 
 ---
 
